@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot UI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bolt.diy/css/bolt.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="chat-container" class="bolt-container">
+        <div id="chat-window" class="bolt-window"></div>
+        <textarea id="user-input" class="bolt-input" placeholder="Type your message here..."></textarea>
+        <button id="send-btn" class="bolt-btn">Send</button>
+    </div>
+
+    <script>
+        document.getElementById("send-btn").addEventListener("click", function() {
+            const userMessage = document.getElementById("user-input").value;
+            if (userMessage) {
+                // Display user message in chat window
+                document.getElementById("chat-window").innerHTML += `<div class="bolt-message bolt-message-user">${userMessage}</div>`;
+                
+                // Send message to backend (Flask + GPT)
+                fetch('https://6407-34-46-243-48.ngrok-free.app/chat', {  // Replace with your ngrok URL
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display chatbot response
+                    const botReply = data.reply || "No response";
+                    document.getElementById("chat-window").innerHTML += `<div class="bolt-message bolt-message-bot">${botReply}</div>`;
+                })
+                .catch(error => console.error("Error:", error));
+            }
+        });
+    </script>
+
+</body>
+</html>
